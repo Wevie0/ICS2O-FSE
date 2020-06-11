@@ -3,6 +3,10 @@ Minim minim;
 // CLEAR ARRAYS TO NEXT LEVEL
 //https://www.pinterest.ca/pin/817473769834335480/
 //https://opengameart.org/content/lpc-skeleton
+//https://rmitisaacsoonggds.wordpress.com/2015/05/25/character-sprite-sheet/
+// author wulax
+// https://www.deviantart.com/asylusgoji91/art/MLSS-Luigi-Sprites-from-LUS-215189143
+//https://www.pngitem.com/middle/wThiRh_enter-the-gungeon-sprite-sheet-hd-png-download/
 AudioPlayer startMenu;
 AudioPlayer shopMenu;
 AudioPlayer levelOneMusic;
@@ -20,8 +24,8 @@ int bullets = 3;        // How many bullets the player has
 float score = 0;          // Player's current score
 int highScore = 0;      // Player's all time top score
 
-boolean robotUnlocked = false;      // "Hidden" character, unlockable when game is beaten
-boolean robinUnlocked = false;      // "Hidden" character, unlockable all coins collected
+boolean robotUnlocked = true;      // "Hidden" character, unlockable when game is beaten
+boolean luigiUnlocked = false;      // "Hidden" character, unlockable all coins collected
 
 PFont text;             // Standard Text Font
 PImage titleScreen;     // Title Screen Img
@@ -32,11 +36,15 @@ PImage coinImg;         // Coin Image
 PImage hearts;          // Heart Image
 PImage bullet;          // Bullet Icon Image
 PImage shopImg;         // Shop Screen Image
-PImage robinHoodShop;   // Image of Robin Hood for Shop
+PImage lock;
 PImage door;
 PImage enemyImg;
-PImage[] rightImages = new PImage [7];
-PImage[] leftImages = new PImage [7];
+PImage[] rightImages1 = new PImage [7];
+PImage[] leftImages1 = new PImage [7];
+PImage[] rightImages2 = new PImage [9];
+PImage[] leftImages2 =  new PImage [9];
+PImage[] rightImages3 = new PImage [8];
+PImage[] leftImages3 = new PImage [8];
 int idle = 0;
 float frame = 0.0;
 
@@ -86,6 +94,7 @@ void setup() {
   text = createFont("OldSchoolAdventures.ttf", 32);
   coinImg = loadImage ("coin.png");
   shopImg = loadImage ("shop.png");
+  lock = loadImage ("lock.png");
   hearts = loadImage ("heart.png");
   bullet = loadImage ("bullet.png");
   door = loadImage ("door.png");
@@ -103,15 +112,23 @@ void setup() {
   }
   enemyDirection.append (new int[]{1, -1});
   platforms.append (new int[] {1, 6});
-  robinHoodShop = loadImage ("robinHoodShop.png");
-  for (int i=0; i<rightImages.length; i++) {
-    rightImages[i]=loadImage("ashley"+nf(i+7, 2)+".png");
-    leftImages[i]=loadImage("ashley"+nf(i, 2)+".png");
+  for (int i=0; i<rightImages1.length; i++) {
+    rightImages1[i]=loadImage("ashley"+nf(i+7, 2)+".png");
+    leftImages1[i]=loadImage("ashley"+nf(i, 2)+".png");
+  }
+  for (int i = 0; i < rightImages2.length; i++) {
+    rightImages2[i] = loadImage ("charTwo" + nf (i, 3) + ".png");
+    leftImages2[i] = loadImage ("charTwo" + nf (i + 9, 3) + ".png");
+  }
+  for (int i = 0; i < rightImages3.length; i++) {
+    rightImages3[i] = loadImage ("charThree" + nf (i, 3) + ".png");
+    leftImages3[i] = loadImage ("charThree" + nf (i + 8, 3) + ".png");
   }
   for (int i = 0; i < enemyLeftImages.length; i++) {
     enemyLeftImages[i] = loadImage ("tile" + nf(i+9, 3) + ".png"); 
     enemyRightImages[i] = loadImage ("tile" + nf(i+27, 3) + ".png");
   }
+
   for (int i = 0; i < enemyX.size(); i++) {
     enemyFrame.append(0.0);
   }
@@ -171,13 +188,11 @@ void draw() {
       image (bullet, 45 + 30 * i, 75, 25, 50);
     } 
     enemies();
-
     score+= 0.05;
     text (int(score), 1400, 50);
     if (score > highScore) {
       highScore = int(score);
     }
-
   case 2: 
     shop();
     break;
@@ -232,14 +247,65 @@ void options() {                                   // Gamemode 3
 
   fill (74, 103, 56);                             // "Ashley" Image
   rect (810, 110, 90, 100);
-  // TODO Add
 
-  textSize (12);                                  // Back Button
+  fill (255, 182, 193);                           // Robot Knight Image
+  rect (940, 110, 90, 100);
+
+  fill (135, 206, 235);
+  rect (1070, 110, 90, 100);
+
+
+
+  if (mouseIn(810, 110, 90, 100)) {
+    if (character != 1) {
+      fill (0, 255, 0);
+      rect (810, 110, 90, 100);
+      if (mousePressed) {
+        character = 1;
+      }
+    } else {
+      fill (255, 0, 0);
+      rect (810, 110, 90, 100);
+    }
+  } else if (mouseIn(940, 110, 90, 100)) {
+    if (character != 2 && robotUnlocked) {
+      fill (0, 255, 0);
+      rect (940, 110, 90, 100);
+      if (mousePressed) {
+        character = 2;
+      }
+    } else {
+      fill (255, 0, 0);
+      rect (940, 110, 90, 100);
+    }
+  } else if (mouseIn(1070, 110, 90, 100)) {
+    if (character != 3 && luigiUnlocked) {
+      fill (0, 255, 0);
+      rect (1070, 110, 90, 100);
+      if (mousePressed) {
+        character = 3;
+      }
+    } else {
+      fill (255, 0, 0); 
+      rect (1070, 110, 90, 100);
+    }
+  }
+  image (rightImages1[0], 835, 130, 40, 60);
+  image (rightImages2[0], 965, 130, 40, 60);
+  image (rightImages3[0], 1095, 130, 40, 60);
+  if (!luigiUnlocked) {
+    image (lock, 1090, 135);
+  }
+
+  // Back Button
   noFill();
   rect (110, 590, 100, 100);
   fill (0);
+  text("Volume:", 140, 500);
+  textSize (12);   
   text ("BACK", 135, 640);
   textSize (32);
+  strokeWeight (1);
 
   if (mousePressed && mouseButton == LEFT) {
     if (mouseIn(110, 590, 100, 100)) {            // Clicking back button
@@ -293,7 +359,6 @@ void credits() {
   }
 }
 
-
 void levelOne() {
   int[] lvl1Door = {3400 + offset, 600, 50, 100};
   int[] lvl2Door = {3400 + offset, 600, 50, 100};
@@ -302,7 +367,7 @@ void levelOne() {
   } else if (level == 2) {
     image (door, lvl2Door[0], lvl2Door[1], lvl2Door[2], lvl2Door[3]);
   }
-    if (hitBox(player, lvl1Door) || hitBox (player, lvl2Door)) {
+  if (hitBox(player, lvl1Door) || hitBox (player, lvl2Door)) {
     level++;
   }
   image (levelOneBG, offset, 0);                // Draws the background, initally at (0,0), but goes back as player progresses
@@ -312,7 +377,6 @@ void levelOne() {
   movePlayer();                                      
   checkHit();
   items();
-
 }
 void levelTwo() {
 }
@@ -382,29 +446,51 @@ void items() {
   textSize (12);
   text ("$" + cash, 740, 50);
   textSize (32);
-
 }
 void levelUp() {
 }
 
 void movePlayer() {
-  rect (player[0], player[1], player[2], player[3]);
   if (keys[65] && player[0] > 50) {                                                     // If "A" Button Pressed && player is not at the left edge
     velocity[0] = -5;                                                                   
     offset += 10;                                                                       // Moves the background right
-    image(leftImages[int(frame)], player[0], player[1], player[2], player[3]);
+    if (character == 1) {
+      image(leftImages1[int(frame)], player[0], player[1], player[2], player[3]);
+    } else if (character == 2) {
+      image(leftImages2[int(frame)], player[0], player[1], player[2], player[3]);
+    } else {
+      image(leftImages2[int(frame)], player[0], player[1], player[2], player[3]);
+    }
     idle = 0;
   } else if (keys[68] && player[0] < 1250) {                                            // If "D" Button Pressed && player is not at the right edge
     velocity[0] = 5;
     offset -= 10;                                                                       // Moves the background left
-    image(rightImages[int(frame)], player[0], player[1], player[2], player[3]);
+    if (character == 1) {
+      image(rightImages1[int(frame)], player[0], player[1], player[2], player[3]);
+    } else if (character == 2) {
+      image(rightImages2[int(frame)], player[0], player[1], player[2], player[3]);
+    } else {
+      image(rightImages3[int(frame)], player[0], player[1], player[2], player[3]);
+    }
     idle = 1;
   } else {                                                                              // Stop if Nothing Pressed
     velocity[0] = 0;
     if (idle == 0) {
-      image (leftImages[0], player[0], player[1], player[2], player[3]);
+      if (character == 1) {
+        image (leftImages1[0], player[0], player[1], player[2], player[3]);
+      } else if (character == 2) {
+        image (leftImages2[0], player[0], player[1], player[2], player[3]);
+      } else {
+        image (leftImages3[0], player[0], player[1], player[2], player[3]);
+      }
     } else {
-      image (rightImages[0], player[0], player[1], player[2], player[3]);
+      if (character == 1) {
+        image (rightImages1[0], player[0], player[1], player[2], player[3]);
+      } else if (character == 2) {
+        image (rightImages2[0], player[0], player[1], player[2], player[3]);
+      } else {
+        image (rightImages3[0], player[0], player[1], player[2], player[3]);
+      }
     }
   }
   if (keys[32] && canJump == true) {                                                    // Spacebar pressed, player on platform
@@ -415,7 +501,11 @@ void movePlayer() {
   player[1] += velocity[1];
   velocity[1]++;                                                                        // Gravity, pulls the player down
   frame += 0.1;
-  if (frame > 6) {
+  if (frame > 6 && character == 1) {
+    frame  = 1.0;
+  } else if (frame > 8 && character == 2) {
+    frame  = 1.0;
+  } else if (frame > 7 && character == 3) {
     frame  = 1.0;
   }
 }
@@ -510,13 +600,13 @@ void shop() {
         fill (255);
       }
     }
-    if (mouseIn(1100, 150, 200, 400)) {                                                   // MouseIn Robin Hood
-      if (cash >= 30 && robinUnlocked == false) {                                        // If requirements sasified, fills frame with green
+    if (mouseIn(1100, 150, 200, 400)) {                                                   // MouseIn Luigi
+      if (cash >= 30 && luigiUnlocked == false) {                                        // If requirements sasified, fills frame with green
         fill (0, 255, 0);
         rect (1100, 150, 200, 400);
         fill (255);
         if (mousePressed && mouseButton == LEFT && doOnce == false) {                     // Unlocks character, subtracts 100 cash when clicked
-          robinUnlocked = true;
+          luigiUnlocked = true;
           doOnce = true;
           cash -= 30;
         }
@@ -529,7 +619,7 @@ void shop() {
 
     image (hearts, 175, 175, 50, 50);
     image (bullet, 175, 450, 50, 100);
-    image (robinHoodShop, 1150, 250, 100, 200);
+    image (rightImages3[0], 1150, 250, 100, 200);
 
     fill (0);
     textAlign (LEFT);
@@ -669,3 +759,4 @@ void keyReleased() {
 void mouseReleased() {
   doOnce = false;
 }
+
